@@ -6,12 +6,34 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
     <script src="https://fgnass.github.io/spin.js/spin.min.js"></script>
+    <style>
+      #export {
+        margin-top:5px;
+        float:left;
+        clear:both;
+        padding: 6px 12px;
+        background-color: #61adf0;
+        background-image: -webkit-linear-gradient(#6ab5f2,#53a0ee);
+        background-image: linear-gradient(#6ab5f2,#53a0ee);
+        box-shadow: inset 0 1px 1px #77bdf4,0 2px 2px -1px rgba(0,0,0,0.2);
+        text-transform: uppercase;
+        border: 1px solid #4d93d7;
+        color: #fff;
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: bold;
+        background-image: none;
+        background-color: rgb(50, 187, 189);
+      }
+    </style>
   </head>
   <body class="mixpanel-platform-body">
     <div class="mixpanel-platform-section">
       <div id="selection">
         <div id="dateSelect" style="float: left;"></div>
-        <div style="clear: left"></div>
+        <div id="export" style="float: left;" onclick="convertToCSV()">Export</div>
+        <div style="clear: both"></div>
         <div id="eventName" style="float: left;"></div>
         <div id="by" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">by</div>
         <div id="property" style="float: left;"></div>
@@ -19,7 +41,6 @@
         <div id="dividendInterval" style="float: left;"></div>
         <div id="over" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">over</div>
         <div id="divisorInterval" style="float: left;"></div>
-        <div style="clear: left"></div>
         <div style="clear: both;"></div>
       </div>
       <div id="graph">
@@ -130,6 +151,7 @@
           console.log (data)
           spinner.stop();
           $("#loading").hide();
+          window.data = data
           chart.MPChart('setData', data);
         });
       };
@@ -145,6 +167,26 @@
       divisorInterval.on('change', propCheck);
       dividendInterval.on('change', propCheck);
       dateSelect.on('change', propCheck);
+     
+     function convertToCSV() {
+      if (window.data) {
+        var objArray = window.data;
+        var headerSet = new Set();
+        var dataStr = '';
+        _.each(_.keys(objArray), function(d) { 
+          var rowStr = d;
+          _.each(_.keys(data[d]).sort(), function(date){
+            headerSet.add(date)
+            rowStr += ', ' + data[d][date]
+          })
+          dataStr += rowStr + '\n'
+        })
+        var csvStr = 'Segment';
+        headerSet.forEach(function(k) { csvStr += ', ' + k;})
+        csvStr += '\n' + dataStr
+        window.open( "data:text/csv;charset=utf-8," + escape(csvStr))
+        }
+     }
     </script>
   </body>
 </html>
