@@ -133,17 +133,21 @@
              that are after our definition of a week
           */
           _.each(_.keys(divisorVals), function(divisorProp) {
-            var divisorDates = _.keys(divisorVals[divisorProp]).sort().reverse()
+            var divisorDates = _.keys(divisorVals[divisorProp]).sort()
             data[divisorProp] = {}
-            _.each(divisorDates, function(divisorDate){
-              _.each(_.keys(divVals[divisorProp]), function(divDate){
-                if (divDate <= divisorDate) {
+            _.each(_.keys(divVals[divisorProp]), function(divDate){
+              _.each(divisorDates, function(divisorDate){
+                if (divDate >= divisorDate) {
+                  
                   denominator =  divisor.values()[divisorProp][divisorDate];
-                  numerator = dividend.values()[divisorProp][divDate];
-                  // Check for dividing by 0, in which case we do not include
-                  if (denominator != 0) {
-                    data[divisorProp][divDate] =  numerator / denominator;
+                  numerator = divVals[divisorProp][divDate];
+                  if (divisorProp == 'tr-istanbul'){
+                    console.log (denominator)
+                    console.log (numerator)
+                    console.log (numerator/denominator)
                   }
+                  // Check for dividing by 0, in which case we do not include
+                  data[divisorProp][divDate] = (denominator != 0) ? numerator / denominator : 0;
                 }
               });
             });
